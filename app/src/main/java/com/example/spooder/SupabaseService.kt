@@ -48,8 +48,8 @@ class SupabaseService @Inject constructor(
     @ApplicationContext private val context: Context
 ){
     companion object {
-        private const val SUPABASE_URL = "https://lholzspyazziknxqopmi.supabase.co"
-        private const val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob2x6c3B5YXp6aWtueHFvcG1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMjc0MTAsImV4cCI6MjA1NzYwMzQxMH0.uku06OF-WapBhuV-A_rJBXu3x24CKKkSTM0SnmPIOOE"
+        private const val SUPABASE_URL = ""
+        private const val SUPABASE_KEY = ""
         private const val MAX_RETRIES = 3
         private const val TIMEOUT_SECONDS = 30L
         private const val BUCKET_NAME = "spooderimage"
