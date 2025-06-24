@@ -165,58 +165,6 @@ class RoomViewModel(application: Application) : AndroidViewModel(application) {
         return totalMinutes
     }
 
-//    private fun processTasksWithAllUsers(users: List<User>, tasks: List<Task>) {
-//        val userDataMap = mutableMapOf<String, UserDataBuilder>()
-//
-//        // Initialize user data with zero stats
-//        users.forEach { user ->
-//            val displayName = when {
-//                !user.username.isNullOrBlank() -> user.username
-//                else -> user.email.substringBefore("@")
-//            }
-//
-//            userDataMap[user.id] = UserDataBuilder(
-//                id = user.id,
-//                name = displayName,
-//                email = user.email,
-//                avatar_url = user.avatar_url
-//            )
-//        }
-//
-//        // Process tasks to update user stats
-//        tasks.forEach { task ->
-//            userDataMap[task.user_id]?.let { builder ->
-//                if (task.is_completed) {
-//                    builder.completedTasks++
-//                    builder.totalMinutes += calculateTaskDuration(task)
-//                    builder.score += calculateScore(task.color)
-//                } else {
-//                    builder.pendingTasks++
-//                }
-//            }
-//        }
-//
-//        // Convert builders to final UserData objects
-//        val allUsers = userDataMap.values.map { builder ->
-//            UserData(
-//                name = builder.name,
-//                hours = formatTotalTime(builder.totalMinutes),
-//                score = builder.score,
-//                completedTasks = builder.completedTasks,
-//                pendingTasks = builder.pendingTasks,
-//                avatarUrl = builder.avatar_url
-//            )
-//        }
-//
-//         Sort by total minutes for Time section
-//        val timeSortedUsers = allUsers.sortedByDescending { it.totalMinutes }
-//        _mostTimeUsers.value = timeSortedUsers.take(3)
-//
-//         Sort by score for Score section
-//        val scoreSortedUsers = allUsers.sortedByDescending { it.score }
-//        _otherUsers.value = scoreSortedUsers
-//    }
-
     private fun calculateTaskDuration(task: Task): Int {
         return try {
             if (task.time_start.isNullOrBlank() || task.time_end.isNullOrBlank()) {

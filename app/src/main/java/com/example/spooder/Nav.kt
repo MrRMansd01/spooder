@@ -82,14 +82,13 @@ fun Myappnav(){
         }
         composable("Room"){
             Room()
-            TimeTableScreen(navController)
+            TimeTableScreen()
             FooterRoom(navController)
         }
         composable("Saved_Beneficiary"){
             SavedBeneficiary(modifier = Modifier)
         }
         composable("My_Account"){
-            // برای My_Account هم باید از hiltViewModel استفاده شود
             val accentViewModel: AccentViewModel = hiltViewModel()
             CodiaMainView(navController, accentViewModel)
         }

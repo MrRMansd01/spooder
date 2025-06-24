@@ -1,5 +1,6 @@
 package com.example.spooder.screen.room
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -38,14 +39,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import com.example.spooder.screen.accent_pass.AccentViewModel
+import android.content.Context
+import androidx.compose.runtime.remember
+import androidx.compose.material3.TextButton
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun Room(viewModel: RoomViewModel = viewModel()) {
+    val context = LocalContext.current
+    val sharedPrefs = remember { context.getSharedPreferences("pomodoro_settings", Context.MODE_PRIVATE) }
+
     var showSettings by remember { mutableStateOf(false) }
-    var focusTimeMinutes by remember { mutableStateOf(25) }
-    var breakTimeMinutes by remember { mutableStateOf(5) }
-    var remainingTime by remember { mutableStateOf(25 * 60) }
+
+    var focusTimeMinutes by remember {
+        mutableStateOf(sharedPrefs.getInt("focus_time", 25))
+    }
+    var breakTimeMinutes by remember {
+        mutableStateOf(sharedPrefs.getInt("break_time", 5))
+    }
+
+    var remainingTime by remember { mutableStateOf(focusTimeMinutes * 60) }
     var isRunning by remember { mutableStateOf(false) }
     var isBreak by remember { mutableStateOf(false) }
     var tempFocusTime by remember { mutableStateOf(focusTimeMinutes.toString()) }
@@ -54,6 +67,14 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
     val currentSession by viewModel.currentSession.observeAsState()
     val todayStats by viewModel.todayStats.observeAsState()
     val error by viewModel.error.observeAsState()
+
+    fun saveSettings(focusTime: Int, breakTime: Int) {
+        with(sharedPrefs.edit()) {
+            putInt("focus_time", focusTime)
+            putInt("break_time", breakTime)
+            apply()
+        }
+    }
 
     // Effect to handle session completion
     LaunchedEffect(remainingTime) {
@@ -204,9 +225,9 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
                             CircularProgressIndicator(
                                 progress = remainingTime.toFloat() / (if (isBreak) breakTimeMinutes * 60f else focusTimeMinutes * 60f),
                                 modifier = Modifier.size(100.dp),
-                                color = if (isBreak) 
-                                    Color(0xFFECB800).copy(alpha = 0.7f) 
-                                else 
+                                color = if (isBreak)
+                                    Color(0xFFECB800).copy(alpha = 0.7f)
+                                else
                                     Color(0xFF46B456).copy(alpha = 0.7f),
                                 strokeWidth = 8.dp,
                                 strokeCap = StrokeCap.Round
@@ -228,7 +249,7 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
                             }
                         }
                         OutlinedButton(
-                            onClick = { 
+                            onClick = {
                                 isRunning = !isRunning
                             },
                             modifier = Modifier
@@ -264,7 +285,7 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
                     )
                     OutlinedTextField(
                         value = tempFocusTime,
-                        onValueChange = { 
+                        onValueChange = {
                             if (it.isEmpty() || it.matches(Regex("^[0-9]*$"))) {
                                 tempFocusTime = it
                             }
@@ -273,14 +294,14 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    
+
                     Text(
                         "Break Time (minutes):",
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
                     OutlinedTextField(
                         value = tempBreakTime,
-                        onValueChange = { 
+                        onValueChange = {
                             if (it.isEmpty() || it.matches(Regex("^[0-9]*$"))) {
                                 tempBreakTime = it
                             }
@@ -293,23 +314,27 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
             },
             confirmButton = {
                 Button(
-                    onClick = { 
-                        tempFocusTime.toIntOrNull()?.let { 
-                            if (it > 0) {
-                                focusTimeMinutes = it
+                    onClick = {
+                        tempFocusTime.toIntOrNull()?.let { newFocusTime ->
+                            if (newFocusTime > 0) {
+                                focusTimeMinutes = newFocusTime
+                                saveSettings(newFocusTime, breakTimeMinutes)
                                 if (!isBreak) {
                                     remainingTime = focusTimeMinutes * 60
                                 }
                             }
                         }
-                        tempBreakTime.toIntOrNull()?.let {
-                            if (it > 0) {
-                                breakTimeMinutes = it
+                        tempBreakTime.toIntOrNull()?.let { newBreakTime ->
+                            if (newBreakTime > 0) {
+                                breakTimeMinutes = newBreakTime
+                                saveSettings(focusTimeMinutes, newBreakTime)
                                 if (isBreak) {
                                     remainingTime = breakTimeMinutes * 60
                                 }
                             }
                         }
+                        tempFocusTime = focusTimeMinutes.toString()
+                        tempBreakTime = breakTimeMinutes.toString()
                         showSettings = false
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -317,6 +342,17 @@ fun Room(viewModel: RoomViewModel = viewModel()) {
                     )
                 ) {
                     Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        tempFocusTime = focusTimeMinutes.toString()
+                        tempBreakTime = breakTimeMinutes.toString()
+                        showSettings = false
+                    }
+                ) {
+                    Text("Cancel")
                 }
             }
         )
@@ -348,7 +384,7 @@ private fun formatTotalTime(minutes: Int): String {
 }
 
 @Composable
-fun TimeTableScreen(navController: NavController) {
+fun TimeTableScreen() {
     val context = LocalContext.current
     val viewModel: RoomViewModel = viewModel(
         factory = RoomViewModelFactory(context.applicationContext as Application)
@@ -363,7 +399,6 @@ fun TimeTableScreen(navController: NavController) {
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState()
     val firstUser = mostTimeUsers.firstOrNull()
-    val userInfo by viewModel.userState.collectAsState()
 
     Column(
         modifier = Modifier

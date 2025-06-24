@@ -1,5 +1,7 @@
 package com.example.spooder.screen.accent_pass
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -53,6 +55,7 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.spooder.model.User
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Accent(navController: NavController,
            viewModel: AccentViewModel = hiltViewModel()) {
@@ -343,7 +346,9 @@ fun Accent(navController: NavController,
                     Switch(
                         checked = notificationEnabled,
                         onCheckedChange = {
-                            viewModel.toggleNotifications(context)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                viewModel.toggleNotifications(context)
+                            }
                             scope.launch {
                                 delay(500)
                                 viewModel.checkNotificationStatus(context)
@@ -361,54 +366,54 @@ fun Accent(navController: NavController,
                     )
 
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(bottom = 25.dp)
-                        .fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.group_1233456),
-                        contentDescription = "I",
-                        modifier = Modifier
-                            .padding(end = 17.dp)
-                            .width(50.dp)
-                            .height(50.dp)
-                    )
-                    Column(
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .weight(1f)
-                    ) {
-                        Text(
-                            "Two-Factor Authentication",
-                            color = Color(0xFF181D27),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(bottom = 10.dp)
-                        )
-                        Text(
-                            "Further secure your account for safety",
-                            color = Color(0xFFABABAB),
-                            fontSize = 11.sp,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                    IconButton(
-                        onClick = { navController.navigate("Accent") },
-                        modifier = Modifier
-                            .padding(bottom = 6.dp)
-                            .width(50.dp)
-                            .height(50.dp)){
-                    Image(
-                        painter = painterResource(id = R.drawable.month_chevron),
-                        contentDescription = "I",
-                        modifier = Modifier
-                            .width(15.dp)
-                            .height(15.dp)
-                    )}
-                }
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    modifier = Modifier
+//                        .padding(bottom = 25.dp)
+//                        .fillMaxWidth()
+//                ) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.group_1233456),
+//                        contentDescription = "I",
+//                        modifier = Modifier
+//                            .padding(end = 17.dp)
+//                            .width(50.dp)
+//                            .height(50.dp)
+//                    )
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(end = 4.dp)
+//                            .weight(1f)
+//                    ) {
+//                        Text(
+//                            "Two-Factor Authentication",
+//                            color = Color(0xFF181D27),
+//                            fontSize = 13.sp,
+//                            fontWeight = FontWeight.Bold,
+//                            modifier = Modifier
+//                                .padding(bottom = 10.dp)
+//                        )
+//                        Text(
+//                            "Further secure your account for safety",
+//                            color = Color(0xFFABABAB),
+//                            fontSize = 11.sp,
+//                            textAlign = TextAlign.Center,
+//                        )
+//                    }
+//                    IconButton(
+//                        onClick = { navController.navigate("Accent") },
+//                        modifier = Modifier
+//                            .padding(bottom = 6.dp)
+//                            .width(50.dp)
+//                            .height(50.dp)){
+//                    Image(
+//                        painter = painterResource(id = R.drawable.month_chevron),
+//                        contentDescription = "I",
+//                        modifier = Modifier
+//                            .width(15.dp)
+//                            .height(15.dp)
+//                    )}
+//                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
@@ -478,10 +483,7 @@ fun Accent(navController: NavController,
                         color = Color(0xFFFFFFFF),
                         shape = RoundedCornerShape(5.dp)
                     )
-//                    .shadow(
-//                        elevation = 44.dp,
-//                        spotColor = Color(0x0D000000),
-//                    )
+
                     .padding(vertical = 24.dp, horizontal = 17.dp)
             ){
                 Column(
@@ -491,17 +493,13 @@ fun Accent(navController: NavController,
                             color = Color(0xFFFFFFFF),
                             shape = RoundedCornerShape(5.dp)
                         )
-//                        .shadow(
-//                            elevation = 44.dp,
-//                            spotColor = Color(0x0D000000),
-//                        )
+
                         .padding(0.dp)
                 ){
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .padding(bottom = 15.dp)
-//                           .height(11.dp)
                             .fillMaxWidth()
                     ){
                         Image(

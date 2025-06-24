@@ -77,7 +77,6 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
-// Todo App Components
 @Composable
 fun TodoApp(
     viewModel: TaskViewModel,
