@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Spooder</string>
+    <string name="back4app_app_id">XFjuHZR7sKEAALx2FMSCIZmFwK46AydiinUKH4wI</string>
+    <string name="back4app_client_key">9m6pPgJo01eqLaubNmhYpOGMgPTTwKFCJn08Tdcw</string>
+    <string name="back4app_server_url">https://parseapi.back4app.com/</string>
+</resources>

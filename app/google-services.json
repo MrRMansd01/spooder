@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "482114144618",
+    "project_id": "spooder-14cdb",
+    "storage_bucket": "spooder-14cdb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482114144618:android:6d0e5eca84ce85436a7d13",
+        "android_client_info": {
+          "package_name": "com.example.spooder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-7N7M_SQiMOTua-7h1O654RQ8vdPr5EQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
