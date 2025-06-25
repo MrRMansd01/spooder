@@ -2,6 +2,7 @@ package com.example.spooder.screen.accent_pass
 
 import android.os.Build
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,17 +11,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -42,8 +43,8 @@ data class Trophy(
 enum class TrophyCategory(val displayName: String, val icon: ImageVector, val color: Color) {
     GENERAL("General", Icons.Default.Star, Color(0xFFFFD700)),
     ACHIEVEMENT("Achievement", Icons.Default.Favorite, Color(0xFFFF6B35)),
-    MILESTONE("Milestone", Icons.Default.Notifications, Color(0xFF4ECDC4)),
-    CHALLENGE("Challenge", Icons.Default.PlayArrow, Color(0xFFE74C3C))
+    MILESTONE("Milestone", Icons.Default.PlayArrow, Color(0xFF4ECDC4)),
+    CHALLENGE("Challenge", Icons.Default.Notifications, Color(0xFFE74C3C))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +53,6 @@ fun SavedBeneficiary(modifier: Modifier = Modifier) {
     var trophies by remember { mutableStateOf(listOf<Trophy>()) }
     var showDialog by remember { mutableStateOf(false) }
     var currentScore by remember { mutableStateOf("") }
-    var currentTime by remember { mutableStateOf("") }
     var currentName by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(TrophyCategory.GENERAL) }
     var expandedCategory by remember { mutableStateOf(false) }
@@ -140,6 +140,7 @@ fun SavedBeneficiary(modifier: Modifier = Modifier) {
                 }
             }
 
+            // Add Trophy Button with enhanced design
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -201,7 +202,7 @@ fun SavedBeneficiary(modifier: Modifier = Modifier) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector = Icons.Default.Favorite,
                             contentDescription = null,
                             tint = Color(0xFF00664F),
                             modifier = Modifier.size(24.dp)
@@ -222,7 +223,7 @@ fun SavedBeneficiary(modifier: Modifier = Modifier) {
                             onValueChange = { currentName = it },
                             label = { Text("Trophy Name") },
                             leadingIcon = {
-                                Icon(Icons.Default.AccountBox, contentDescription = null)
+                                Icon(Icons.Default.Edit, contentDescription = null)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(8.dp)
@@ -301,8 +302,7 @@ fun SavedBeneficiary(modifier: Modifier = Modifier) {
                     Button(
                         onClick = {
                             val score = currentScore.toIntOrNull() ?: 0
-                            val time = currentTime.toIntOrNull() ?: 0
-                            if (score > 0 && time > 0 && currentName.isNotBlank()) {
+                            if (score > 0 && currentName.isNotBlank()) {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     trophies = trophies + Trophy(
                                         name = currentName,
@@ -380,7 +380,7 @@ fun EmptyState() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Default.Add,
+            imageVector = Icons.Default.Favorite,
             contentDescription = null,
             modifier = Modifier.size(80.dp),
             tint = Color(0xFFE0E0E0)
