@@ -28,8 +28,8 @@ class JoinViewModel @Inject constructor(
     private val prefs: SharedPreferences = application.getSharedPreferences("login_prefs", Context.MODE_PRIVATE)
 
     private val supabase = createSupabaseClient(
-        supabaseUrl = "",
-        supabaseKey = ""
+        supabaseUrl = "https://lholzspyazziknxqopmi.supabase.co",
+        supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxob2x6c3B5YXp6aWtueHFvcG1pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIwMjc0MTAsImV4cCI6MjA1NzYwMzQxMH0.uku06OF-WapBhuV-A_rJBXu3x24CKKkSTM0SnmPIOOE"
     ) {
         install(Postgrest) {
             defaultSerializer = io.github.jan.supabase.serializer.KotlinXSerializer(json)

@@ -86,7 +86,7 @@ fun Myappnav(){
             FooterRoom(navController)
         }
         composable("Saved_Beneficiary"){
-            SavedBeneficiary(modifier = Modifier)
+            SavedBeneficiary()
         }
         composable("My_Account"){
             val accentViewModel: AccentViewModel = hiltViewModel()

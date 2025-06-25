@@ -2,7 +2,6 @@ package com.example.spooder.screen.accent_pass
 
 import android.os.Build
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -12,16 +11,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -43,13 +41,13 @@ data class Trophy(
 enum class TrophyCategory(val displayName: String, val icon: ImageVector, val color: Color) {
     GENERAL("General", Icons.Default.Star, Color(0xFFFFD700)),
     ACHIEVEMENT("Achievement", Icons.Default.Favorite, Color(0xFFFF6B35)),
-    MILESTONE("Milestone", Icons.Default.PlayArrow, Color(0xFF4ECDC4)),
-    CHALLENGE("Challenge", Icons.Default.Notifications, Color(0xFFE74C3C))
+    MILESTONE("Milestone", Icons.Default.Place, Color(0xFF4ECDC4)),
+    CHALLENGE("Challenge", Icons.Default.Person, Color(0xFFE74C3C))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavedBeneficiary(modifier: Modifier = Modifier) {
+fun SavedBeneficiary() {
     var trophies by remember { mutableStateOf(listOf<Trophy>()) }
     var showDialog by remember { mutableStateOf(false) }
     var currentScore by remember { mutableStateOf("") }
@@ -272,7 +270,7 @@ fun SavedBeneficiary(modifier: Modifier = Modifier) {
                                 expanded = expandedCategory,
                                 onDismissRequest = { expandedCategory = false }
                             ) {
-                                TrophyCategory.values().forEach { category ->
+                                TrophyCategory.entries.forEach { category ->
                                     DropdownMenuItem(
                                         text = {
                                             Row(
