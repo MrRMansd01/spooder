@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.spooder.R
@@ -53,7 +52,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.spooder.model.User
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -61,24 +59,24 @@ fun Accent(navController: NavController,
            viewModel: AccentViewModel = hiltViewModel()) {
     val userInfo by viewModel.userState.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
-    
+
     LaunchedEffect(Unit) {
         viewModel.fetchUserProfile()
     }
-    
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
             title = { Text("خروج از حساب کاربری") },
             text = { Text("آیا مطمئن هستید که می‌خواهید از حساب کاربری خود خارج شوید؟") },
             confirmButton = {
-                OutlinedButton(onClick = {
+                OutlinedButton(
+                    onClick = {
                         viewModel.logout()
                         showLogoutDialog = false
-                        navController.navigate("Join") {
-                            popUpTo("Home") { inclusive = true }
-                        }
-                    }, border = BorderStroke(1.dp, Color(0xFFEC0000)), colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFEC0000))) {
+                    },
+                    border = BorderStroke(1.dp, Color(0xFFEC0000)),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFFEC0000))
+                ) {
                     Text("خروج")
                 }
             },
@@ -346,9 +344,7 @@ fun Accent(navController: NavController,
                     Switch(
                         checked = notificationEnabled,
                         onCheckedChange = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                viewModel.toggleNotifications(context)
-                            }
+                            viewModel.toggleNotifications(context)
                             scope.launch {
                                 delay(500)
                                 viewModel.checkNotificationStatus(context)
@@ -366,54 +362,6 @@ fun Accent(navController: NavController,
                     )
 
                 }
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    modifier = Modifier
-//                        .padding(bottom = 25.dp)
-//                        .fillMaxWidth()
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.group_1233456),
-//                        contentDescription = "I",
-//                        modifier = Modifier
-//                            .padding(end = 17.dp)
-//                            .width(50.dp)
-//                            .height(50.dp)
-//                    )
-//                    Column(
-//                        modifier = Modifier
-//                            .padding(end = 4.dp)
-//                            .weight(1f)
-//                    ) {
-//                        Text(
-//                            "Two-Factor Authentication",
-//                            color = Color(0xFF181D27),
-//                            fontSize = 13.sp,
-//                            fontWeight = FontWeight.Bold,
-//                            modifier = Modifier
-//                                .padding(bottom = 10.dp)
-//                        )
-//                        Text(
-//                            "Further secure your account for safety",
-//                            color = Color(0xFFABABAB),
-//                            fontSize = 11.sp,
-//                            textAlign = TextAlign.Center,
-//                        )
-//                    }
-//                    IconButton(
-//                        onClick = { navController.navigate("Accent") },
-//                        modifier = Modifier
-//                            .padding(bottom = 6.dp)
-//                            .width(50.dp)
-//                            .height(50.dp)){
-//                    Image(
-//                        painter = painterResource(id = R.drawable.month_chevron),
-//                        contentDescription = "I",
-//                        modifier = Modifier
-//                            .width(15.dp)
-//                            .height(15.dp)
-//                    )}
-//                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
