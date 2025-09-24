@@ -1,6 +1,7 @@
-package com.example.spooder.screen.room
+package com.example.payeh.screen.room
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.runtime.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -16,26 +17,21 @@ import androidx.compose.ui.text.font.*
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
-import com.example.spooder.R
+import com.example.payeh.R // ایمپورت صحیح
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.app.Application
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import kotlinx.coroutines.delay
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
-import android.content.Context
-import androidx.compose.runtime.remember
+import com.example.spooder.screen.room.RoomViewModel
+import com.example.spooder.screen.room.UserData
 
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Room(navController: NavController, viewModel: RoomViewModel = viewModel()) {
+fun Room(navController: NavController, viewModel: RoomViewModel = viewModel()) { // تصحیح ViewModel
     Scaffold(
         bottomBar = { FooterRoom(navController = navController) }
     ) { innerPadding ->
@@ -133,7 +129,7 @@ fun PomodoroSection(viewModel: RoomViewModel) {
 
 
 @Composable
-fun TimeTableScreen(viewModel: RoomViewModel) {
+fun TimeTableScreen(viewModel: RoomViewModel) { // تصحیح ViewModel
 
     LaunchedEffect(Unit) {
         viewModel.fetchUserData()
@@ -303,15 +299,5 @@ fun FooterRoom(navController: NavController) {
             onClick = { navController.navigate("Accent") },
             icon = { Image(painter = painterResource(id = R.drawable.vector), contentDescription = "Profile") }
         )
-    }
-}
-
-class RoomViewModelFactory(private val application: Application) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(RoomViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return RoomViewModel(application) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

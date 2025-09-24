@@ -1,101 +1,83 @@
-package com.example.spooder
+package com.example.payeh // <<< نام پکیج به payeh تغییر کرد
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.payeh.screen.room.Room
 import com.example.spooder.screen.HomeScreen
 import com.example.spooder.screen.Join
-import com.example.spooder.screen.calendar.NavCalender
-import com.example.spooder.screen.calendar.TimelineCalendarScreen
 import com.example.spooder.screen.accent_pass.AboutApp
-// این ایمپورت را اضافه کنید
 import com.example.spooder.screen.accent_pass.Accent
 import com.example.spooder.screen.accent_pass.CodiaMainView
-import com.example.spooder.screen.accent_pass.FooterAccent
 import com.example.spooder.screen.accent_pass.HelpSupport
 import com.example.spooder.screen.accent_pass.SavedBeneficiary
-import com.example.spooder.screen.room.FooterRoom
-import com.example.spooder.screen.room.Room
-import com.example.spooder.screen.room.TimeTableScreen
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
+import com.example.spooder.screen.calendar.TimelineCalendarScreen
 import com.example.spooder.screen.chat.ChatHome
 import com.example.spooder.screen.chat.ChatSccren
 import com.example.spooder.screen.login.JoinViewModel
 import com.example.spooder.screen.login.Registration
-// ایمپورت AccentViewModel
-import com.example.spooder.screen.accent_pass.AccentViewModel
-import com.example.spooder.screen.chat.NavChat
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Myappnav(){
+fun Myappnav() {
     val navController = rememberNavController()
-    var selectedTimeStart by remember { mutableStateOf("") }
-    var selectedTimeEnd by remember { mutableStateOf("") }
 
-    val viewModel: JoinViewModel = hiltViewModel()
-    val startDestination = if (viewModel.isLoggedIn()) "Home" else "Join"
+    // این ViewModel فقط برای تعیین صفحه شروع استفاده می‌شود
+    val joinViewModel: JoinViewModel = hiltViewModel()
+    val startDestination = if (joinViewModel.isLoggedIn()) "Home" else "Join"
 
     NavHost(navController = navController, startDestination = startDestination) {
-        composable("Home"){
+        composable("Home") {
             HomeScreen(navController)
         }
-        composable("Accent"){
-            val accentViewModel: AccentViewModel = hiltViewModel()
-            Accent(navController = navController, viewModel = accentViewModel)
-            FooterAccent(navController)
+        composable("Accent") {
+            // هر صفحه ViewModel خودش را می‌گیرد
+            Accent(navController = navController)
         }
-        composable("Join"){
+        composable("Join") {
             Join(navController)
         }
-        composable("Registration"){
+        composable("Registration") {
             Registration(navController)
         }
-        composable("Chat"){
+        composable("Chat") {
             ChatHome(navController)
-            NavChat(navController)
         }
-        composable("chat/{channelId}&{channelName}", arguments = listOf(
-            navArgument("channelId") {
-                type = NavType.StringType
-            },
-            navArgument("channelName") {
-                type = NavType.StringType
-            }
-        )) {
-            val channelId = it.arguments?.getString("channelId") ?: ""
-            val channelName = it.arguments?.getString("channelName") ?: ""
-            ChatSccren(navController, channelId,channelName)
+        composable(
+            route = "chat/{channelId}&{channelName}",
+            arguments = listOf(
+                navArgument("channelId") { type = NavType.StringType },
+                navArgument("channelName") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val channelId = backStackEntry.arguments?.getString("channelId") ?: ""
+            val channelName = backStackEntry.arguments?.getString("channelName") ?: ""
+            ChatSccren(navController, channelId, channelName)
         }
-        composable("calendar"){
-            TimelineCalendarScreen(
-                selectedTimeStart = selectedTimeStart,
-                selectedTimeEnd = selectedTimeEnd)
-            NavCalender(navController)
+        composable("calendar") {
+            TimelineCalendarScreen(selectedTimeStart = "", selectedTimeEnd = "")
         }
-        composable("Room"){
-            Room()
-            TimeTableScreen()
-            FooterRoom(navController)
+        composable("Room") {
+            // صفحه Room به صورت داخلی ViewModel خودش (RoomViewModel) را می‌سازد
+            // و دیگر خطای Type Mismatch رخ نمی‌دهد
+            Room(navController = navController)
         }
-        composable("Saved_Beneficiary"){
+        composable("Saved_Beneficiary") {
             SavedBeneficiary()
         }
-        composable("My_Account"){
-            val accentViewModel: AccentViewModel = hiltViewModel()
-            CodiaMainView(navController, accentViewModel)
+        composable("My_Account") {
+            CodiaMainView(navController = navController)
         }
-        composable("Help_Support"){
+        composable("Help_Support") {
             HelpSupport(navController)
         }
-        composable("AboutApp"){
+        composable("AboutApp") {
             AboutApp(navController)
         }
     }

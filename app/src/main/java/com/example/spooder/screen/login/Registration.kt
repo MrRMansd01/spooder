@@ -47,7 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.spooder.R
+import com.example.payeh.R
 
 @Composable
 fun Registration(navController: NavController) {

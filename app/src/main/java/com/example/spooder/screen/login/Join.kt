@@ -45,7 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.spooder.R
+import com.example.payeh.R
 import com.example.spooder.screen.login.JoinViewModel
 import com.example.spooder.screen.login.SignInState
 

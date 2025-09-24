@@ -28,7 +28,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.spooder.R
+import com.example.payeh.R
 import com.example.spooder.model.User
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

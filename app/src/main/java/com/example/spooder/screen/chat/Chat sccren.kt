@@ -32,7 +32,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.spooder.R
+import com.example.payeh.R
 import com.example.spooder.model.Message
 import com.example.spooder.screen.accent_pass.AccentViewModel
 import java.io.File

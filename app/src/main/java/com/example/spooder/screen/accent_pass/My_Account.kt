@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.spooder.R
+import com.example.payeh.R
 import kotlinx.coroutines.launch
 import coil.compose.AsyncImage
 import androidx.compose.foundation.shape.CircleShape
