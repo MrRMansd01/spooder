@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "spooder"
+rootProject.name = "payeh"
 include(":app")
  

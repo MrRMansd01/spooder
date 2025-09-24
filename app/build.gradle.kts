@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.spooder"
+    namespace = "com.example.payeh"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.spooder"
+        applicationId = "com.example.payeh"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

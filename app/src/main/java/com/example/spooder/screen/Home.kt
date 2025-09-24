@@ -31,7 +31,6 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -54,6 +53,7 @@ class TaskViewModelFactory(private val application: Application) : ViewModelProv
 }
 
 // Main Screen
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
@@ -61,19 +61,21 @@ fun HomeScreen(navController: NavController) {
         factory = TaskViewModelFactory(context.applicationContext as Application)
     )
 
-    val today by rememberSaveable { 
+    val today by rememberSaveable {
         mutableStateOf(SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH).format(Calendar.getInstance().time))
     }
-    
+
     LaunchedEffect(today) {
         viewModel.fetchTasksByDate(today)
     }
 
-    Box {
-        Hero()
-        Mobile()
-        TodoApp(viewModel, navController)
-        Footer(navController)
+    Scaffold(
+        bottomBar = { Footer(navController = navController) }
+    ) { innerPadding ->
+        Box(modifier = Modifier.padding(innerPadding)) {
+            Hero()
+            TodoApp(viewModel, navController)
+        }
     }
 }
 
@@ -86,23 +88,29 @@ fun TodoApp(
     val isLoading by viewModel.isLoading.observeAsState(initial = false)
     val error by viewModel.error.observeAsState()
 
-    when {
-        isLoading -> LoadingIndicator()
-        error != null -> ErrorMessage(error!!)
-        else -> TodoList(todos = tasks, navController = navController, viewModel = viewModel)
+    // This Column will be placed correctly by the Scaffold
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 240.dp) // Adjust this padding as needed to position below the Hero
+    ) {
+        Header(navController)
+        when {
+            isLoading -> LoadingIndicator()
+            error != null -> ErrorMessage(error!!)
+            else -> TodoList(todos = tasks, viewModel = viewModel)
+        }
     }
 }
 
 @Composable
 private fun LoadingIndicator() {
     Box(
-        modifier = Modifier
-            .offset(y = 300.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            color = Color.White,
+            color = Color(0xFF00664F),
             modifier = Modifier.size(48.dp)
         )
     }
@@ -111,9 +119,7 @@ private fun LoadingIndicator() {
 @Composable
 private fun ErrorMessage(error: String) {
     Box(
-        modifier = Modifier
-            .offset(y = 300.dp)
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -127,40 +133,27 @@ private fun ErrorMessage(error: String) {
 @Composable
 fun TodoList(
     todos: List<Task>,
-    navController: NavController,
     viewModel: TaskViewModel
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
-            .padding(bottom = 8.dp)
-            .offset(y = 240.dp)
-            .zIndex(5f),
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .clip(shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+            .background(color = Color(0xFF00664F)),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
     ) {
-        Header(navController)
-
-        LazyColumn(
-            modifier = Modifier
-                .padding(start = 8.dp, end = 20.dp, top = 5.dp)
-                .clip(shape = RoundedCornerShape(16.dp))
-                .background(color = Color(0xFF00664F), shape = RoundedCornerShape(16.dp))
-                .height(435.dp)
-                .width(380.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 8.dp, bottom = 70.dp)
-        ) {
-            if (todos.isEmpty()) {
-                item {
-                    EmptyTasksMessage()
-                }
-            } else {
-                items(
-                    items = todos,
-                    key = { task -> task.id }
-                ) { task ->
-                    key(task.id) {
-                        TodoItem(task,viewModel)
-                    }
-                }
+        if (todos.isEmpty()) {
+            item {
+                EmptyTasksMessage()
+            }
+        } else {
+            items(
+                items = todos,
+                key = { task -> task.id }
+            ) { task ->
+                TodoItem(task, viewModel)
             }
         }
     }
@@ -210,8 +203,7 @@ fun TodoItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp))
     ) {
         SwipeBackground()
@@ -247,7 +239,7 @@ fun TodoItem(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(25.dp)
+                    .padding(16.dp)
             ) {
                 TaskTitle(task)
                 TaskDetails(task)
@@ -302,11 +294,11 @@ private fun SwipeBackground() {
 private fun TaskTitle(task: Task) {
     Text(
         text = task.title,
-        fontSize = 22.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.Medium,
         color = Color.Black,
         style = if (task.is_completed) TextStyle(textDecoration = TextDecoration.LineThrough) else TextStyle.Default,
-        modifier = Modifier.padding(bottom = 12.dp)
+        modifier = Modifier.padding(bottom = 8.dp)
     )
 }
 
@@ -337,15 +329,15 @@ private fun TaskInfo(task: Task) {
 private fun DayOfWeekBox(task: Task) {
     Box(
         modifier = Modifier
-            .height(42.dp)
-            .width(68.dp)
+            .height(38.dp)
+            .width(64.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(getTaskColor(task.color)),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = getDayOfWeek(task.date),
-            fontSize = 18.sp,
+            fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = Color.Black
         )
@@ -365,7 +357,7 @@ private fun ProgressIndicators(task: Task) {
             1 -> Color(0xFF2BBA90)  // green
             else -> Color(0xFF2BBA90)
         }
-        
+
         repeat(3) { index ->
             ProgressIndicator(
                 color = color,
@@ -379,7 +371,7 @@ private fun ProgressIndicators(task: Task) {
 private fun TaskTime(task: Task) {
     Text(
         text = task.time_start ?: "",
-        fontSize = 22.sp,
+        fontSize = 18.sp,
         fontWeight = FontWeight.Medium,
         color = Color(0xFF4A3BF7)
     )
@@ -433,7 +425,6 @@ fun getDayOfWeek(dateString: String): String {
         calendar.time = date ?: Calendar.getInstance().time
         SimpleDateFormat("EEE", Locale.ENGLISH).format(calendar.time)
     } catch (e: Exception) {
-        // اگر تاریخ در فرمت yyyy-MM-dd نبود، فرمت dd رو امتحان کن
         try {
             val dayFormat = SimpleDateFormat("dd", Locale.ENGLISH)
             val date = dayFormat.parse(dateString)
@@ -463,170 +454,75 @@ fun ProgressIndicator(color: Color, isActive: Boolean) {
 // Layout Components
 @Composable
 fun Hero() {
-    Image(
-        painter = painterResource(id = R.drawable.image),
-        contentDescription = "Hero image",
-        modifier = Modifier
-            .width(400.dp)
-            .height(400.dp)
-            .offset(x = 10.dp, y = (-80).dp)
-            .zIndex(3f)
-    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(300.dp) // Adjusted height
             .background(color = Color(0xFF00664F))
-            .zIndex(1F)
-    )
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.image),
+            contentDescription = "Hero image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp)
+                .align(Alignment.BottomCenter)
+        )
+    }
 }
 
-@Composable
-fun Mobile() {
-    Column(
-        modifier = Modifier
-            .padding(bottom = 70.dp, start = 6.dp, end = 6.dp, top = 250.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
-            .fillMaxWidth()
-            .height(600.dp)
-            .background(
-                color = Color(0xFF00664F),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(top = 19.dp, bottom = 52.dp)
-            .zIndex(3F)
-    ){}
-    Column(
-        modifier = Modifier
-            .padding(bottom = 0.dp, start = 0.dp, end = 0.dp, top = 240.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
-            .fillMaxWidth()
-            .height(700.dp)
-            .background(
-                color = Color(0xFFFFFFFF),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(top = 10.dp, bottom = 0.dp)
-            .zIndex(2F)
-    ){}
-}
 
 @Composable
 private fun Header(navController: NavController) {
-    OutlinedButton(
-        onClick = { navController.navigate("calendar") },
-        border = BorderStroke(0.dp, Color.Transparent),
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(bottom = 0.dp, start = 15.dp, end = 190.dp, top = 5.dp)
             .fillMaxWidth()
-            .offset(x = (-10).dp, y = 5.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { navController.navigate("calendar") }
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        Icon(
+            painter = painterResource(R.drawable.icon1),
+            contentDescription = "Todo",
+            tint = Color.White,
             modifier = Modifier
-                .padding(bottom = 16.dp)
-                .offset(y = 5.dp, x = 0.dp)
-                .zIndex(4F)
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.icon1),
-                contentDescription = "Todo",
-                tint = Color.White,
-                modifier = Modifier
-                    .size(43.dp)
-                    .offset(x = (-0).dp, y = 5.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp).padding(top = 5.dp).offset(y = 5.dp))
-        Text("To-Do", color = Color.White, fontSize = 40.sp)
+                .size(36.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("To-Do", color = Color.White, fontSize = 32.sp, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
 fun Footer(navController: NavController) {
-    Column(
-        modifier = Modifier
-            .offset(y = 780.dp)
-
-            .fillMaxWidth()
-            .background(
-                color = Color(0xFFFFFFFF),
-            )
-            .padding(vertical = 10.dp, horizontal = 36.dp)
-            .zIndex(7F)
+    NavigationBar(
+        containerColor = Color.White,
+        contentColor = Color.Gray
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(bottom = 6.dp)
-                .fillMaxWidth()
-        ) {
-            IconButton(
-                onClick = { navController.navigate("Home") },
-                modifier = Modifier
-                    .width(50.dp)
-                    .height(40.dp)
-                    .padding(end = 5.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.home_alt_2),
-                    contentDescription = "I",
-                )
-
-            }
-            IconButton(
-                onClick = { navController.navigate("Room") },
-                modifier = Modifier
-                    .padding(start = 25.dp, end = 25.dp)
-                    .width(40.dp)
-                    .height(40.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.icons8_user_account_96),
-                    contentDescription = "I",
-                    modifier = Modifier
-                        .padding(end = 5.dp, bottom = 10.dp)
-                        .width(50.dp)
-                        .height(40.dp)
-                )
-            }
-            IconButton(
-                onClick = { navController.navigate("calendar") },
-                modifier = Modifier
-                    .padding(end = 35.dp, bottom = 10.dp)
-                    .width(40.dp)
-                    .height(40.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.icon),
-                    contentDescription = "I",
-                )
-            }
-            IconButton(
-                onClick = { navController.navigate("Chat") },
-                modifier = Modifier
-                    .padding(end = 25.dp, bottom = 10.dp)
-                    .width(40.dp)
-                    .height(40.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.vector1),
-                    contentDescription = "I",
-                )
-            }
-            IconButton(
-                onClick = { navController.navigate("Accent") },
-                modifier = Modifier
-                    .padding(bottom = 10.dp)
-                    .width(50.dp)
-                    .height(50.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.vector),
-                    contentDescription = "I",
-                )
-            }
-        }
+        NavigationBarItem(
+            selected = true,
+            onClick = { navController.navigate("Home") },
+            icon = { Image(painter = painterResource(id = R.drawable.home_alt_2), contentDescription = "Home") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { navController.navigate("Room") },
+            icon = { Image(painter = painterResource(id = R.drawable.icons8_user_account_96), contentDescription = "Room") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { navController.navigate("calendar") },
+            icon = { Image(painter = painterResource(id = R.drawable.icon), contentDescription = "Calendar") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { navController.navigate("Chat") },
+            icon = { Image(painter = painterResource(id = R.drawable.vector1), contentDescription = "Chat") }
+        )
+        NavigationBarItem(
+            selected = false,
+            onClick = { navController.navigate("Accent") },
+            icon = { Image(painter = painterResource(id = R.drawable.vector), contentDescription = "Profile") }
+        )
     }
 }
-

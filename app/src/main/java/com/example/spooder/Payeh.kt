@@ -1,8 +1,8 @@
-package com.example.spooder
+package com.example.payeh
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class Spooder : Application() {
+class Payeh : Application() {
 }
